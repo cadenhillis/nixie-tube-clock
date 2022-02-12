@@ -2,7 +2,7 @@
   "board": {
     "active_layer": 31,
     "active_layer_preset": "",
-    "auto_track_width": false,
+    "auto_track_width": true,
     "hidden_nets": [],
     "high_contrast_mode": 0,
     "net_color_mode": 1,
@@ -62,11 +62,11 @@
       35,
       36
     ],
-    "visible_layers": "7fcffdf_80000001",
+    "visible_layers": "7ffffff_80000001",
     "zone_display_mode": 0
   },
   "meta": {
-    "filename": "nixie-tube-clock.kicad_prl",
+    "filename": "nixie_daughter.kicad_prl",
     "version": 3
   },
   "project": {
