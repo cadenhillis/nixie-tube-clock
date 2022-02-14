@@ -1295,6 +1295,11 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 43391b24-1461-434d-975e-8a77d1e4d18f)
   )
+  (text "6-32 x 3/4 in MF standoff to front panel\nsame for rear but FF"
+    (at 29.21 16.51 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 5e372dc8-30ff-4a61-8ed0-592ad0944ea6)
+  )
   (text "week" (at 152.4 99.06 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 7c41897f-f7f9-4a9f-b6b3-c7bf77060a23)
