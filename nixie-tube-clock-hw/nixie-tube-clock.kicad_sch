@@ -2929,10 +2929,10 @@
     (path "/3e56d9ee-e4f1-41fc-9d6a-2d6e6e8ad807" (page "1"))
     (path "/707afb61-7651-44ce-83e2-006ac05910c6" (page "2"))
     (path "/0f164f5f-ce46-4a0f-aed4-90543affee8b" (page "3"))
-    (path "/f5443302-197b-472a-b14a-60a9f67d3b3f" (page "7"))
     (path "/34ce4e81-1933-462b-a9be-0bc1cc3bfb0e" (page "4"))
     (path "/6b34c966-1922-4f1d-a19b-a364558218be" (page "5"))
     (path "/b60e71a5-a78e-4615-99b1-d6b13e2875f1" (page "6"))
+    (path "/f5443302-197b-472a-b14a-60a9f67d3b3f" (page "7"))
     (path "/8a841f68-6f4f-41f7-ae0b-0bd43ab5ff74" (page "8"))
   )
 
@@ -3463,7 +3463,7 @@
       (reference "J?") (unit 1) (value "itsy bitsy sockets") (footprint "")
     )
     (path "/bd472f43-1e2b-4c52-8cb4-5e5e311ab0b3/037a1ddf-0d76-445c-a0df-c95c82634474"
-      (reference "L1") (unit 1) (value "1mH") (footprint "nixie_tube_clock:PM2120")
+      (reference "L1") (unit 1) (value "470uH") (footprint "nixie_tube_clock:PM2120")
     )
     (path "/adeb541d-0e55-423b-b1a5-ac8cec777f8d"
       (reference "PS?") (unit 1) (value "VEL24US120-US-JA") (footprint "")
