@@ -3925,28 +3925,28 @@
       (reference "U4") (unit 1) (value "NCP1117IDT50T4G") (footprint "Package_TO_SOT_SMD:TO-252-2")
     )
     (path "/3e56d9ee-e4f1-41fc-9d6a-2d6e6e8ad807/9d4e82d6-f198-4b7e-a7a2-457487cc56a6"
-      (reference "U5") (unit 1) (value "74HC594D,118") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
+      (reference "U5") (unit 1) (value "74HC594D") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
     )
     (path "/3e56d9ee-e4f1-41fc-9d6a-2d6e6e8ad807/c3a22183-2ae2-4e1d-bd06-e1eee0d021cd"
-      (reference "U6") (unit 1) (value "74HC594D,118") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
+      (reference "U6") (unit 1) (value "74HC594D") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
     )
     (path "/707afb61-7651-44ce-83e2-006ac05910c6/9d4e82d6-f198-4b7e-a7a2-457487cc56a6"
-      (reference "U7") (unit 1) (value "74HC594D,118") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
+      (reference "U7") (unit 1) (value "74HC594D") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
     )
     (path "/707afb61-7651-44ce-83e2-006ac05910c6/c3a22183-2ae2-4e1d-bd06-e1eee0d021cd"
-      (reference "U8") (unit 1) (value "74HC594D,118") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
+      (reference "U8") (unit 1) (value "74HC594D") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
     )
     (path "/0f164f5f-ce46-4a0f-aed4-90543affee8b/9d4e82d6-f198-4b7e-a7a2-457487cc56a6"
-      (reference "U9") (unit 1) (value "74HC594D,118") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
+      (reference "U9") (unit 1) (value "74HC594D") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
     )
     (path "/0f164f5f-ce46-4a0f-aed4-90543affee8b/c3a22183-2ae2-4e1d-bd06-e1eee0d021cd"
-      (reference "U10") (unit 1) (value "74HC594D,118") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
+      (reference "U10") (unit 1) (value "74HC594D") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
     )
     (path "/34ce4e81-1933-462b-a9be-0bc1cc3bfb0e/9d4e82d6-f198-4b7e-a7a2-457487cc56a6"
-      (reference "U11") (unit 1) (value "74HC594D,118") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
+      (reference "U11") (unit 1) (value "74HC594D") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
     )
     (path "/34ce4e81-1933-462b-a9be-0bc1cc3bfb0e/c3a22183-2ae2-4e1d-bd06-e1eee0d021cd"
-      (reference "U12") (unit 1) (value "74HC594D,118") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
+      (reference "U12") (unit 1) (value "74HC594D") (footprint "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")
     )
   )
 )
