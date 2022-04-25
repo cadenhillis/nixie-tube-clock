@@ -1,9 +1,15 @@
 
 import board
+import microcontroller
 import analogio, digitalio, pwmio, busio
-#from adafruit_ble import BLERadio
+from adafruit_ble import BLERadio
+from adafruit_ble.advertising.standard import SolicitServicesAdvertisement
+from adafruit_ble.services.standard import CurrentTimeService
+from adafruit_ble.services.nordic import UARTService
+from adafruit_bluefruit_connect.packet import Packet
 import rtc
 import time as t
+from datetime import date
 
 class nixie_tube_clock:
 
@@ -20,23 +26,8 @@ class nixie_tube_clock:
         9 : b'\x01\x00', # bit 8
         }  
 
-    month_days = {
-        1  : 30,
-        2  : 30,
-        3  : 30,
-        4  : 30,
-        5  : 30,
-        6  : 30,
-        7  : 30,
-        8  : 30,
-        9  : 30,
-        10 : 30,
-        11 : 30,
-        12 : 30,
-    }
-
-
     def __init__(self):
+
         #dio
         self.store = digitalio.DigitalInOut(board.D2)
         self.store.direction = digitalio.Direction.OUTPUT
@@ -64,70 +55,104 @@ class nixie_tube_clock:
 
         #pwm
         self.day_pwm = pwmio.PWMOut(board.A1)
-        self.day_pwm.duty_cycle = 25
-
+        self.day_pwm.duty_cycle = 0
         self.week_pwm = pwmio.PWMOut(board.A2)
         self.week_pwm.duty_cycle = 0
-
         self.month_pwm = pwmio.PWMOut(board.A3)
         self.month_pwm.duty_cycle = 0
-
         self.year_pwm = pwmio.PWMOut(board.A4)
         self.year_pwm.duty_cycle = 0
 
         #ain
-        self.temp_ntc = analogio.AnalogIn(board.A0)
+        #self.temp_ntc = analogio.AnalogIn(board.A0)
         #temp = temp_ntc.value * x x x x x
 
         #ble
+        self.ble = BLERadio()
+        self.uart = UARTService()
+        self.advertisement = SolicitServicesAdvertisement()
+        self.advertisement.complete_name = "TimePlease:-)"
+        self.advertisement.solicited_services.append(CurrentTimeService)
+        self.ble.start_advertising(self.advertisement)
 
         #values
-        self.time_value = {
-            'hour':12,
-            'min':0,
-            'day':1,
-            'month':1,
-        }
-
-        self.time_set(1,1,1,1)
+        # time init
+        r = rtc.RTC()
+        #look for file
+        r.datetime = t.struct_time((2022, 4, 25, 13, 30, 0, 0, -1, -1))
 
     @property
     def time(self):
-        return self.time_value
+        return self.r.datetime
    
-    def time_set(self, hour=None, min=None, day=None, month=None):
-        if hour is not None: self.time['hour'] = hour
-        if min is not None: self.time['min'] = min
-        if day is not None: self.time['day'] = day
-        if month is not None: self.time['month'] = month
+    def time_set(self, hour=None, min=None, day=None, month=None, year = None):
+        if hour is not None: self.r.datetime[3] = hour
+        if min is not None: self.r.datetime[4] = min
+        if day is not None: self.r.datetime[2] = day
+        if month is not None: self.r.datetime[1] = month
+        if year is not None: self.r.datetime[0] = year
         self.update_display()
 
     def update_display(self):
         #assemble bytearray
-        mod_h = self.time['hour'] % 10
-        mod_m = self.time['min'] % 10
-        self.SEND_BUF = self.digit_dict[(self.time['hour'] - mod_h) / 10] + self.digit_dict[mod_h] + self.digit_dict[(self.time['hour'] - mod_m) / 10] + self.digit_dict[mod_m]
+        mod_h = self.r.datetime[3] % 10
+        if self.r.datetime[3] > 12:
+            temp = self.r.datetime[3]-12
+        else:
+            temp = self.r.datetime[3]
+        mod_m = self.r.datetime[4] % 10
+        self.SEND_BUF = self.digit_dict[(temp - mod_h) / 10] + self.digit_dict[mod_h] + self.digit_dict[(self.r.datetime[4] - mod_m) / 10] + self.digit_dict[mod_m]
         print(self.SEND_BUF)
         self.write_74hc594d()
+        self.write_pwm()
     
     def write_74hc594d(self):
-        delay = 0.000001  #.1ms period, maybe make it do some bogus math to wait a super small amt of time?
         #re-init spi
         spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI)
         while not spi.try_lock():
             pass
         spi.configure(baudrate = 9600)
-
+        #send data
         print(self.SEND_BUF)
         spi.write(self.SEND_BUF)
         spi.deinit()
-        #t.sleep(delay)
-        #self.store.value = True
-        #t.sleep(delay)
-        # may need to play w timing so this executes AFTER the data has been sent? # when does this execute ?
-        self.store.value = False
-        self.store.value = True
+        #pulse storage clk to store shift values
         self.store.value = False
         self.store.value = True
         self.store.value = False
         
+    def write_pwm(self):
+        #get yday
+        leapday = self.r.datetime[7]
+        year = self.r.datetime[0]
+        #detect leap year
+        if self.r.datetime[7] == 59:
+            if float.is_integer((self.r.datetime[0] - 2020) / 4):
+                self.r.datetime[7] = 60
+                if self.r.datetime[6] == 0: self.r.datetime[6] = 6
+                else: self.r.datetime[6] -= 1
+        # write values
+        self.day_pwm.duty_cycle = int(((self.r.datetime[3] * 60 + self.r.datetime[4])/1440) * 65535)
+        self.week_pwm.duty_cycle = int(((self.r.datetime[3] * 60 + self.r.datetime[4] + (self.r.datetime[6]+ 1) * 24 * 60) / 10080) * 65535)
+        self.month_pwm.duty_cycle = int(self.r.datetime[2]/31 * 65535) #assuming 31 days a month bec im lazy
+        self.year_pwm.duty_cycle = int(self.r.datetime[7]/366 * 65535)
+
+    def ble_connect(self):
+        self.ble.start_advertising(self.advertisement)
+        i = 0
+        while not self.ble.connected:
+            self.update_display()
+            #print(ntc.r.datetime)
+            pass
+        self.ble.stop_advertising()
+        print("connected")
+
+        while self.ble.connected:
+            for connection in self.ble.connections:
+                if not connection.paired:
+                    connection.pair()
+                    print("paired")
+            cts = connection[CurrentTimeService]
+            self.r.datetime = cts
+            self.update_display(self)
+                
