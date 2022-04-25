@@ -1,15 +1,12 @@
 
 import board
-import microcontroller
 import analogio, digitalio, pwmio, busio
 from adafruit_ble import BLERadio
 from adafruit_ble.advertising.standard import SolicitServicesAdvertisement
 from adafruit_ble.services.standard import CurrentTimeService
 from adafruit_ble.services.nordic import UARTService
-from adafruit_bluefruit_connect.packet import Packet
 import rtc
 import time as t
-from datetime import date
 
 class nixie_tube_clock:
 
@@ -66,6 +63,12 @@ class nixie_tube_clock:
         #ain
         #self.temp_ntc = analogio.AnalogIn(board.A0)
         #temp = temp_ntc.value * x x x x x
+        
+        #values
+        # time init
+        self.r = rtc.RTC()
+        #look for file
+        self.r.datetime = t.struct_time((2022, 4, 25, 13, 30, 0, 0, -1, -1))
 
         #ble
         self.ble = BLERadio()
@@ -74,35 +77,17 @@ class nixie_tube_clock:
         self.advertisement.complete_name = "TimePlease:-)"
         self.advertisement.solicited_services.append(CurrentTimeService)
         self.ble.start_advertising(self.advertisement)
-
-        #values
-        # time init
-        r = rtc.RTC()
-        #look for file
-        r.datetime = t.struct_time((2022, 4, 25, 13, 30, 0, 0, -1, -1))
-
-    @property
-    def time(self):
-        return self.r.datetime
    
-    def time_set(self, hour=None, min=None, day=None, month=None, year = None):
-        if hour is not None: self.r.datetime[3] = hour
-        if min is not None: self.r.datetime[4] = min
-        if day is not None: self.r.datetime[2] = day
-        if month is not None: self.r.datetime[1] = month
-        if year is not None: self.r.datetime[0] = year
-        self.update_display()
-
     def update_display(self):
         #assemble bytearray
-        mod_h = self.r.datetime[3] % 10
         if self.r.datetime[3] > 12:
             temp = self.r.datetime[3]-12
         else:
             temp = self.r.datetime[3]
+        mod_h = temp % 10
         mod_m = self.r.datetime[4] % 10
-        self.SEND_BUF = self.digit_dict[(temp - mod_h) / 10] + self.digit_dict[mod_h] + self.digit_dict[(self.r.datetime[4] - mod_m) / 10] + self.digit_dict[mod_m]
-        print(self.SEND_BUF)
+        self.SEND_BUF = self.digit_dict[mod_m] + self.digit_dict[(self.r.datetime[4] - mod_m) / 10] + self.digit_dict[mod_h] + self.digit_dict[(temp - mod_h) / 10] 
+        #print(self.SEND_BUF)
         self.write_74hc594d()
         self.write_pwm()
     
@@ -113,7 +98,7 @@ class nixie_tube_clock:
             pass
         spi.configure(baudrate = 9600)
         #send data
-        print(self.SEND_BUF)
+        #print(self.SEND_BUF)
         spi.write(self.SEND_BUF)
         spi.deinit()
         #pulse storage clk to store shift values
@@ -138,8 +123,6 @@ class nixie_tube_clock:
         self.year_pwm.duty_cycle = int(self.r.datetime[7]/366 * 65535)
 
     def ble_connect(self):
-        self.ble.start_advertising(self.advertisement)
-        i = 0
         while not self.ble.connected:
             self.update_display()
             #print(ntc.r.datetime)
@@ -152,7 +135,9 @@ class nixie_tube_clock:
                 if not connection.paired:
                     connection.pair()
                     print("paired")
-            cts = connection[CurrentTimeService]
-            self.r.datetime = cts
-            self.update_display(self)
+                cts = connection[CurrentTimeService]
+                self.r.datetime = cts.struct_time
+                print(self.r.datetime)
+                self.update_display()
+                t.sleep(5)
                 
