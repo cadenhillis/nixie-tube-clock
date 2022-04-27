@@ -38,13 +38,11 @@ class nixie_tube_clock:
         self.clr_store_n.direction = digitalio.Direction.OUTPUT
         self.clr_store_n.value = True
 
-        self.colon1 = digitalio.DigitalInOut(board.D10)
-        self.colon1.direction = digitalio.Direction.OUTPUT
-        self.colon1.value = True
+        self.colon1 = pwmio.PWMOut(board.D10)
+        self.colon1.duty_cycle = int(65535*0.01)
 
-        self.colon2 = digitalio.DigitalInOut(board.D9)
-        self.colon2.direction = digitalio.Direction.OUTPUT
-        self.colon2.value = True
+        self.colon2 = pwmio.PWMOut(board.D9)
+        self.colon2.duty_cycle = int(65535*0.01)
 
         self.temp_led = digitalio.DigitalInOut(board.D7)
         self.temp_led.direction = digitalio.Direction.OUTPUT
@@ -122,10 +120,10 @@ class nixie_tube_clock:
         self.month_pwm.duty_cycle = int(self.r.datetime[2]/31 * 65535) #assuming 31 days a month bec im lazy
         self.year_pwm.duty_cycle = int(self.r.datetime[7]/366 * 65535)
 
-    def ble_connect(self):
+    def ble_time(self):
         while not self.ble.connected:
             self.update_display()
-            #print(ntc.r.datetime)
+            t.sleep(10)
             pass
         self.ble.stop_advertising()
         print("connected")
@@ -139,5 +137,5 @@ class nixie_tube_clock:
                 self.r.datetime = cts.struct_time
                 print(self.r.datetime)
                 self.update_display()
-                t.sleep(5)
+                t.sleep(10)
                 
